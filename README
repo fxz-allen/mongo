@@ -1,0 +1,50 @@
+mongorc.js
+
+#禁止删库操作
+#仅仅只能禁止本机登陆其他服务器删除
+
+DB.prototype.dropDatabase = function() {
+    print("=======   Warning   =======   ");
+    print("Forbid to  dropping DBs!");
+}
+db.dropDatabase = DB.prototype.dropDatabase;
+
+
+var forbid = function() {
+    print("=======   Warning   =======   ");
+    print("Forbidden to  dropping !");
+    print("Please contact operators !");
+}
+db.dropDatabase = DB.prototype.dropDatabase = forbid;
+DBCollection.prototype.drop = forbid;
+DBCollection.prototype.dropIndex = forbid;
+DBCollection.prototype.remove = forbid;
+
+测试：
+danmaku:PRIMARY> use test2
+switched to db test2
+danmaku:PRIMARY>
+danmaku:PRIMARY> db.item.insert({"name":1})
+WriteResult({ "nInserted" : 1 })
+danmaku:PRIMARY>
+danmaku:PRIMARY>
+danmaku:PRIMARY>
+danmaku:PRIMARY> db.dropDatabase()
+=======   Warning   =======
+Forbidden to  dropping !
+Please contact operators !
+danmaku:PRIMARY>
+danmaku:PRIMARY> db.item.ensureIndex({"name":1})
+{
+    "createdCollectionAutomatically" : false,
+    "numIndexesBefore" : 1,
+    "numIndexesAfter" : 2,
+    "ok" : 1
+}
+danmaku:PRIMARY>
+danmaku:PRIMARY>
+danmaku:PRIMARY> db.item.dropIndex({"name":1})
+=======   Warning   =======
+Forbidden to  dropping !
+Please contact operators !
+danmaku:PRIMARY>
